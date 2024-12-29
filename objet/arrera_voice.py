@@ -19,3 +19,6 @@ class CArreraVoice:
         thRemove.start()
         thRemove.join()
         del thRemove
+
+    def playFile(self,file:str):
+        pl(file)
