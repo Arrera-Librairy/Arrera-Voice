@@ -11,13 +11,18 @@ class CArreraVoice:
         self.__configFile = configFile
         self.__emplacementSoundMicro = self.__configFile.lectureJSON("fileMicro")
         self.__soundMicro = True
+        self.__listWord = []
+        self.__nbWord = 0
         self.__outPutText = ""
+        self.loadConfig()
 
     def loadConfig(self):
-        if (self.__configFile.lectureJSON("soundMicro") == 1 ):
+        if (self.__configFile.lectureJSON("soundMicro") == "1" ):
             self.__soundMicro = True
         else:
             self.__soundMicro = False
+        self.__listWord = self.__configFile.lectureJSONList("listWord")
+        self.__nbWord = len(self.__listWord)
 
     def say(self,text:str):
         tts = gt(text, lang='fr')
@@ -53,3 +58,21 @@ class CArreraVoice:
 
     def getTextMicro(self):
         return self.__outPutText
+
+    def trigerWord(self):
+        if self.__nbWord == 0 or self.__nbWord > 3:
+            return -3
+        r = sr.Recognizer()
+        with sr.Microphone() as source:
+            r.adjust_for_ambient_noise(source)
+            audio = r.listen(source)
+        try:
+            text = r.recognize_google(audio, language='fr-FR')
+            for word in self.__listWord:
+                if word in text:
+                    return 1
+        except sr.UnknownValueError:
+            return -1
+        except sr.RequestError as e:
+            return -2
+        return 0
