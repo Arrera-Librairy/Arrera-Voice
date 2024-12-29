@@ -1,2 +1,5 @@
 gtts
 playsound3
+SpeechRecognition
+PocketSphinx
+pyaudio
